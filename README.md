@@ -8,6 +8,12 @@ This app checks your local weather in real-time and gives you a brutally honest,
 
 ---
 
+## 🌐 Live Demo
+
+**👉 [will-my-eid-outfit-get-ruined.vercel.app](https://will-my-eid-outfit-get-ruined.vercel.app)**
+
+---
+
 ## ✨ Features
 
 - **📍 Auto Location Detection** — Uses the browser Geolocation API. No manual input needed.
