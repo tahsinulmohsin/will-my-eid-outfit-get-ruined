@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Will My Eid Outfit Get Ruined? ☪️ | আমার ঈদের পোশাক কি নষ্ট হবে?</title>
+    <meta name="description" content="Check if the weather will ruin your precious Eid ul-Fitr outfit. Get sarcastic, weather-specific advice before you step outside. আপনার ঈদের পোশাক কি বৃষ্টিতে ভিজবে?" />
+    <meta name="keywords" content="Eid, Eid ul-Fitr, weather, outfit, rain check, eid outfit, ঈদ, আবহাওয়া, পোশাক" />
+    <meta name="author" content="Eid Outfit Checker" />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        poppins: ['Poppins', 'Noto Sans Bengali', 'sans-serif'],
+                    },
+                },
+            },
+        };
+    </script>
+
+    <!-- Google Fonts – Poppins + Noto Sans Bengali -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <style>
+        /* ── Base & Transitions ────────────────────────────── */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', 'Noto Sans Bengali', sans-serif;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 1.2s ease, color 0.6s ease;
+            overflow-x: hidden;
+        }
+
+        /* ── Gradient Presets ──────────────────────────────── */
+        .bg-loading {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #e2e8f0;
+        }
+        .bg-good {
+            background: linear-gradient(135deg, #0d5e3a, #1a7a4e, #b8860b, #daa520);
+            color: #fff;
+        }
+        .bg-bad {
+            background: linear-gradient(135deg, #1a1a2e, #2d3748, #4a5568, #374151);
+            color: #cbd5e1;
+        }
+
+        /* ── Pulse animation for loader ───────────────────── */
+        @keyframes pulse-slow {
+            0%, 100% { opacity: .6; transform: scale(1); }
+            50%      { opacity: 1;  transform: scale(1.08); }
+        }
+        .animate-pulse-slow { animation: pulse-slow 2s ease-in-out infinite; }
+
+        /* ── Entrance animation ───────────────────────────── */
+        @keyframes pop-in {
+            0%   { opacity: 0; transform: scale(.5) translateY(40px); }
+            60%  { transform: scale(1.06) translateY(-6px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .animate-pop-in { animation: pop-in .7s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+        /* ── Floating particles (decorative) ──────────────── */
+        .particle {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            animation: float-up 6s ease-in-out infinite;
+        }
+        @keyframes float-up {
+            0%   { opacity: 0; transform: translateY(0) scale(0); }
+            20%  { opacity: .35; }
+            80%  { opacity: .15; }
+            100% { opacity: 0; transform: translateY(-100vh) scale(1); }
+        }
+
+        /* ── Result verdict text ──────────────────────────── */
+        .verdict {
+            font-size: clamp(5rem, 22vw, 16rem);
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -0.04em;
+            text-shadow: 0 6px 30px rgba(0,0,0,.35);
+        }
+        .verdict-bn {
+            font-size: clamp(3.5rem, 16vw, 12rem);
+            letter-spacing: 0;
+        }
+
+        /* ── Sarcastic advice card ────────────────────────── */
+        .advice-card {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            background: rgba(255,255,255,.1);
+            border: 1px solid rgba(255,255,255,.18);
+        }
+
+        /* ── Weather detail chips ─────────────────────────── */
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: .8rem;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,.12);
+            border: 1px solid rgba(255,255,255,.15);
+        }
+
+        /* ── Location denied card ─────────────────────────── */
+        .denied-card {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 50, 50, .08);
+            border: 1px solid rgba(255, 100, 100, .2);
+        }
+
+        /* ── Language toggle ──────────────────────────────── */
+        .lang-toggle {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 50;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            background: rgba(255,255,255,.12);
+            border: 1px solid rgba(255,255,255,.2);
+            border-radius: 9999px;
+            padding: 4px;
+            display: flex;
+            gap: 2px;
+        }
+        .lang-btn {
+            padding: 6px 16px;
+            border-radius: 9999px;
+            font-size: .8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: transparent;
+            color: rgba(255,255,255,.6);
+        }
+        .lang-btn.active {
+            background: rgba(255,255,255,.22);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,.15);
+        }
+        .lang-btn:hover:not(.active) {
+            color: rgba(255,255,255,.85);
+        }
+    </style>
+</head>
+
+<body id="app-body" class="bg-loading">
+
+    <!-- ═══════════════════════════════════════════════════
+         Language Toggle (always visible)
+         ═══════════════════════════════════════════════════ -->
+    <div class="lang-toggle" id="lang-toggle">
+        <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" id="btn-bn" onclick="setLang('bn')">বাংলা</button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         SCREEN 1 — Loading / Geolocation
+         ═══════════════════════════════════════════════════ -->
+    <section id="loading-screen" class="flex flex-col items-center justify-center text-center px-6 min-h-screen w-full">
+        <div class="animate-pulse-slow">
+            <p class="text-6xl mb-4">☪️</p>
+            <h1 id="loading-title" class="text-2xl sm:text-3xl font-bold tracking-tight mb-2">Will My Eid Outfit Get Ruined?</h1>
+            <p id="loading-subtitle" class="text-base sm:text-lg opacity-70 max-w-md">Hold on… checking the skies above you&nbsp;🌤️</p>
+        </div>
+        <div class="mt-10 flex gap-2">
+            <span class="w-3 h-3 rounded-full bg-white/40 animate-bounce" style="animation-delay:0s"></span>
+            <span class="w-3 h-3 rounded-full bg-white/40 animate-bounce" style="animation-delay:.15s"></span>
+            <span class="w-3 h-3 rounded-full bg-white/40 animate-bounce" style="animation-delay:.3s"></span>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SCREEN 2 — Result
+         ═══════════════════════════════════════════════════ -->
+    <section id="result-screen" class="hidden flex-col items-center justify-center text-center px-6 py-12 min-h-screen w-full">
+
+        <!-- Verdict -->
+        <p id="verdict" class="verdict select-none"></p>
+
+        <!-- Advice -->
+        <div id="advice-card" class="advice-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 mt-6 max-w-xl w-full animate-pop-in">
+            <p id="advice-emoji" class="text-4xl sm:text-5xl mb-3"></p>
+            <p id="advice-text" class="text-lg sm:text-xl font-medium leading-relaxed"></p>
+        </div>
+
+        <!-- Weather chips -->
+        <div id="weather-chips" class="flex flex-wrap justify-center gap-3 mt-8"></div>
+
+        <!-- Footer -->
+        <p id="footer-text" class="mt-10 text-xs opacity-40">Powered by Open-Meteo&nbsp;·&nbsp;Eid Mubarak&nbsp;☪️</p>
+
+        <!-- Retry -->
+        <button
+            id="retry-btn"
+            onclick="location.reload()"
+            class="mt-6 px-6 py-2.5 rounded-full text-sm font-semibold bg-white/15 hover:bg-white/25 border border-white/20 transition-all duration-300 cursor-pointer backdrop-blur"
+        >
+            🔄 Check Again
+        </button>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SCREEN 3 — Error / Denied
+         ═══════════════════════════════════════════════════ -->
+    <section id="error-screen" class="hidden flex-col items-center justify-center text-center px-6 min-h-screen w-full">
+        <div class="denied-card rounded-2xl sm:rounded-3xl p-8 max-w-md w-full">
+            <p class="text-5xl mb-4">📍</p>
+            <h2 id="error-title" class="text-xl sm:text-2xl font-bold mb-2">Location Access Needed</h2>
+            <p id="error-msg" class="opacity-70 text-sm sm:text-base mb-6">We need your location to check the weather. Please allow location access and try again.</p>
+            <button
+                id="error-retry-btn"
+                onclick="location.reload()"
+                class="px-6 py-2.5 rounded-full text-sm font-semibold bg-white/15 hover:bg-white/25 border border-white/20 transition-all duration-300 cursor-pointer backdrop-blur"
+            >
+                🔄 Try Again
+            </button>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         Decorative Particles
+         ═══════════════════════════════════════════════════ -->
+    <div id="particles" aria-hidden="true"></div>
+
+    <!-- ═══════════════════════════════════════════════════
+         JavaScript
+         ═══════════════════════════════════════════════════ -->
+    <script>
+        // ─── State ───────────────────────────────────────
+        let currentLang = 'en';
+        let lastWeatherData = null;  // stored so we can re-render on lang switch
+
+        // ─── DOM References ──────────────────────────────
+        const $loading = document.getElementById('loading-screen');
+        const $result  = document.getElementById('result-screen');
+        const $error   = document.getElementById('error-screen');
+        const $body    = document.getElementById('app-body');
+
+        // ─── i18n — Static UI Strings ────────────────────
+        const ui = {
+            en: {
+                loadingTitle:    'Will My Eid Outfit Get Ruined?',
+                loadingSubtitle: 'Hold on… checking the skies above you\u00A0🌤️',
+                footerText:      'Powered by Open-Meteo\u00A0·\u00A0Eid Mubarak\u00A0☪️',
+                retryBtn:        '🔄 Check Again',
+                errorTitle:      'Location Access Needed',
+                errorDefault:    'We need your location to check the weather. Please allow location access and try again.',
+                errorRetryBtn:   '🔄 Try Again',
+                verdictYes:      'YES',
+                verdictNo:       'NO',
+                feels:           'Feels',
+            },
+            bn: {
+                loadingTitle:    'আমার ঈদের পোশাক কি নষ্ট হবে?',
+                loadingSubtitle: 'একটু অপেক্ষা করুন… আকাশ দেখছি\u00A0🌤️',
+                footerText:      'Open-Meteo দ্বারা চালিত\u00A0·\u00A0ঈদ মুবারক\u00A0☪️',
+                retryBtn:        '🔄 আবার চেক করুন',
+                errorTitle:      'লোকেশন অ্যাক্সেস দরকার',
+                errorDefault:    'আবহাওয়া দেখতে আপনার লোকেশন দরকার। অনুগ্রহ করে লোকেশন অ্যাক্সেস দিন।',
+                errorRetryBtn:   '🔄 আবার চেষ্টা করুন',
+                verdictYes:      'হ্যাঁ',
+                verdictNo:       'না',
+                feels:           'মনে হচ্ছে',
+            }
+        };
+
+        // ─── i18n — Weather Labels ───────────────────────
+        const weatherLabels = {
+            en: {
+                0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',
+                45:'Foggy',48:'Depositing rime fog',
+                51:'Light drizzle',53:'Moderate drizzle',55:'Dense drizzle',
+                56:'Light freezing drizzle',57:'Dense freezing drizzle',
+                61:'Slight rain',63:'Moderate rain',65:'Heavy rain',
+                66:'Light freezing rain',67:'Heavy freezing rain',
+                71:'Slight snowfall',73:'Moderate snowfall',75:'Heavy snowfall',
+                77:'Snow grains',80:'Slight rain showers',81:'Moderate rain showers',
+                82:'Violent rain showers',85:'Slight snow showers',86:'Heavy snow showers',
+                95:'Thunderstorm',96:'Thunderstorm w/ slight hail',99:'Thunderstorm w/ heavy hail',
+            },
+            bn: {
+                0:'পরিষ্কার আকাশ',1:'মোটামুটি পরিষ্কার',2:'আংশিক মেঘলা',3:'মেঘাচ্ছন্ন',
+                45:'কুয়াশাচ্ছন্ন',48:'ঘন কুয়াশা',
+                51:'হালকা গুঁড়ি বৃষ্টি',53:'মাঝারি গুঁড়ি বৃষ্টি',55:'ঘন গুঁড়ি বৃষ্টি',
+                56:'হালকা ঠান্ডা গুঁড়ি বৃষ্টি',57:'ঘন ঠান্ডা গুঁড়ি বৃষ্টি',
+                61:'হালকা বৃষ্টি',63:'মাঝারি বৃষ্টি',65:'প্রবল বৃষ্টি',
+                66:'হালকা শীতল বৃষ্টি',67:'প্রবল শীতল বৃষ্টি',
+                71:'হালকা তুষারপাত',73:'মাঝারি তুষারপাত',75:'ভারী তুষারপাত',
+                77:'তুষার কণা',80:'হালকা বৃষ্টির ঝাপটা',81:'মাঝারি বৃষ্টির ঝাপটা',
+                82:'প্রবল বৃষ্টির ঝাপটা',85:'হালকা তুষার ঝাপটা',86:'ভারী তুষার ঝাপটা',
+                95:'বজ্রঝড়',96:'শিলাবৃষ্টিসহ বজ্রঝড়',99:'ভারী শিলাবৃষ্টিসহ বজ্রঝড়',
+            }
+        };
+
+        // ─── i18n — Sarcastic Advice ─────────────────────
+        const advice = {
+            en: {
+                good: [
+                    { emoji: '😎', text: "Crisp lighting, zero drizzle — go secure those Instagram likes. You're welcome." },
+                    { emoji: '✨', text: "The skies cleared up just for you. Wear your best, flex hard, and make your cousins jealous." },
+                    { emoji: '🔥', text: "Not a cloud in sight. Your outfit is SAFE. Now go look absolutely unreal." },
+                    { emoji: '💅', text: "Weather's looking gorgeous. Time to debut that outfit you've been planning since Ramadan started." },
+                    { emoji: '👑', text: "Clear skies, warm vibes. You're literally the main character today. Act like it." },
+                    { emoji: '📸', text: "Perfect weather for the annual Eid photoshoot. Strike a pose, legend." },
+                    { emoji: '🌟', text: "The forecast is immaculate. Your outfit shall remain pristine. Go forth and slay." },
+                    { emoji: '🕌', text: "Allah blessed you with good weather AND good fashion sense. Mashallah, go celebrate!" },
+                ],
+                bad: [
+                    { emoji: '☔', text: "Cancel the photoshoot — you're going to look like you swam to the Eid prayer." },
+                    { emoji: '💀', text: "Your outfit vs. this weather? The weather wins. Wear a hazmat suit instead." },
+                    { emoji: '🫠', text: "Rain detected. Your kurta is about to become a wet towel. Plan accordingly." },
+                    { emoji: '🌧️', text: "Hope your outfit is waterproof because the sky is about to throw hands." },
+                    { emoji: '😭', text: "The clouds came to ruin your Eid. Maybe next year you'll get the photoshoot you deserve." },
+                    { emoji: '🥲', text: "Yikes. The weather is giving 'stay home and eat seviyan in your PJs'." },
+                    { emoji: '🫣', text: "Your dry-clean-only outfit just got a death sentence. Consider a raincoat as an accessory." },
+                    { emoji: '💧', text: "It's pouring out there. Your fit is about to go from 'Eid Mubarak' to 'Eid Mubadruck'." },
+                ],
+                freezing: [
+                    { emoji: '🥶', text: "It's freezing out there. Your stunning outfit will be hidden under 4 layers anyway." },
+                    { emoji: '❄️', text: "Subzero temperatures. That thin silk kurta was a bold choice. Very bold. Very cold." },
+                    { emoji: '🧊', text: "Hope your Eid outfit comes with thermal lining. You're going to need it." },
+                ],
+                hot: [
+                    { emoji: '🥵', text: "It's scorching. Your makeup will melt before the first selfie. Bring blotting paper." },
+                    { emoji: '🔥', text: "It's hotter than your biryani out there. Maybe skip the 5-layer outfit." },
+                    { emoji: '☀️', text: "Sun's blazing. Wear SPF or your glow-up becomes a burn-down." },
+                ],
+            },
+            bn: {
+                good: [
+                    { emoji: '😎', text: "ঝকঝকে আলো, এক ফোঁটা বৃষ্টি নেই — যাও Instagram লাইক কামাও। ধন্যবাদ বলো না।" },
+                    { emoji: '✨', text: "আকাশ শুধু তোমার জন্যই পরিষ্কার হয়েছে। বেস্ট পোশাক পরো, ফ্লেক্স মারো, কাজিনদের হিংসা করাও।" },
+                    { emoji: '🔥', text: "আকাশে একটা মেঘও নেই। তোমার পোশাক সেফ! এখন গিয়ে সবাইকে দেখিয়ে দাও।" },
+                    { emoji: '💅', text: "আবহাওয়া দারুণ। রমজান থেকে যে পোশাক প্ল্যান করছিলে, এখন সেটা ডেবিউ করার সময়।" },
+                    { emoji: '👑', text: "পরিষ্কার আকাশ, গরম ভাইবস। তুমি আজ মেইন ক্যারেক্টার। সেভাবেই চলো।" },
+                    { emoji: '📸', text: "ঈদের বার্ষিক ফটোশুটের জন্য পারফেক্ট আবহাওয়া। পোজ দাও, লিজেন্ড।" },
+                    { emoji: '🌟', text: "ফোরকাস্ট নিখুঁত। তোমার পোশাক অটুট থাকবে। যাও এবং স্লে করো।" },
+                    { emoji: '🕌', text: "আল্লাহ তোমাকে ভালো আবহাওয়া আর ভালো ফ্যাশন সেন্স দুটোই দিয়েছেন। মাশাআল্লাহ, উদযাপন করো!" },
+                ],
+                bad: [
+                    { emoji: '☔', text: "ফটোশুট বাতিল করো — তুমি দেখতে এমন লাগবে যেন সাঁতরে ঈদের নামাজে এসেছো।" },
+                    { emoji: '💀', text: "তোমার পোশাক বনাম এই আবহাওয়া? আবহাওয়া জিতবে। বরং হ্যাজম্যাট স্যুট পরো।" },
+                    { emoji: '🫠', text: "বৃষ্টি ধরা পড়েছে। তোমার পাঞ্জাবি এখন ভেজা গামছা হতে যাচ্ছে। প্ল্যান করো।" },
+                    { emoji: '🌧️', text: "আশা করি তোমার পোশাক ওয়াটারপ্রুফ, কারণ আকাশ মারামারি করতে আসছে।" },
+                    { emoji: '😭', text: "মেঘগুলো তোমার ঈদ নষ্ট করতে এসেছে। হয়তো আগামী বছর ফটোশুট পাবে।" },
+                    { emoji: '🥲', text: "বাপরে! আবহাওয়া বলছে 'বাসায় থাকো আর পায়জামায় সেমাই খাও'।" },
+                    { emoji: '🫣', text: "তোমার ড্রাই-ক্লিন-ওনলি পোশাকের মৃত্যুদণ্ড হলো। রেইনকোটকে অ্যাক্সেসরি হিসেবে ভাবো।" },
+                    { emoji: '💧', text: "বাইরে ঝমঝম বৃষ্টি। তোমার ফিটনেস 'ঈদ মুবারক' থেকে 'ঈদ ডুবারক' হতে যাচ্ছে।" },
+                ],
+                freezing: [
+                    { emoji: '🥶', text: "বাইরে কনকনে ঠান্ডা। তোমার সুন্দর পোশাক ৪ লেয়ারের নিচে ঢাকা থাকবে।" },
+                    { emoji: '❄️', text: "হিমাঙ্কের নিচে তাপমাত্রা। সেই পাতলা সিল্কের পাঞ্জাবি? সাহসী চয়েস। খুব সাহসী। খুব ঠান্ডা।" },
+                    { emoji: '🧊', text: "আশা করি তোমার ঈদের পোশাকে থার্মাল লাইনিং আছে। তোমার দরকার হবে।" },
+                ],
+                hot: [
+                    { emoji: '🥵', text: "প্রচন্ড গরম। প্রথম সেলফির আগেই মেকআপ গলে যাবে। ব্লটিং পেপার নিয়ে যাও।" },
+                    { emoji: '🔥', text: "বাইরে তোমার বিরিয়ানির চেয়েও গরম। ৫ লেয়ারের পোশাক বাদ দাও।" },
+                    { emoji: '☀️', text: "রোদ জ্বলছে। SPF লাগাও, না হলে গ্লো-আপ বার্ন-ডাউন হয়ে যাবে।" },
+                ],
+            }
+        };
+
+        // ─── i18n — Error Messages ───────────────────────
+        const errorMessages = {
+            en: {
+                1: 'Location permission denied. Please allow access in your browser settings.',
+                2: 'Location unavailable. Please try again later.',
+                3: 'Location request timed out. Please try again.',
+                noGeo: 'Geolocation is not supported by your browser.',
+                api: 'Weather API error — please try again.',
+                unknown: 'An unknown location error occurred.',
+            },
+            bn: {
+                1: 'লোকেশন পারমিশন দেওয়া হয়নি। ব্রাউজার সেটিংসে গিয়ে অনুমতি দিন।',
+                2: 'লোকেশন পাওয়া যাচ্ছে না। পরে আবার চেষ্টা করুন।',
+                3: 'লোকেশন রিকোয়েস্ট টাইমআউট হয়েছে। আবার চেষ্টা করুন।',
+                noGeo: 'আপনার ব্রাউজার জিওলোকেশন সাপোর্ট করে না।',
+                api: 'আবহাওয়া API ত্রুটি — আবার চেষ্টা করুন।',
+                unknown: 'একটি অজানা লোকেশন ত্রুটি ঘটেছে।',
+            }
+        };
+
+        // ─── Helpers ─────────────────────────────────────
+        function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+        function showScreen(screen) {
+            [$loading, $result, $error].forEach(s => {
+                s.classList.add('hidden');
+                s.classList.remove('flex');
+            });
+            screen.classList.remove('hidden');
+            screen.classList.add('flex');
+        }
+
+        function spawnParticles(isGood) {
+            const container = document.getElementById('particles');
+            container.innerHTML = '';
+            const colors = isGood
+                ? ['#daa520','#228B22','#FFD700','#32CD32','#f5e6a3']
+                : ['#6b7280','#3b82f6','#93c5fd','#475569','#9ca3af'];
+            for (let i = 0; i < 18; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                const size = Math.random() * 10 + 4;
+                p.style.cssText = `
+                    width:${size}px; height:${size}px;
+                    left:${Math.random()*100}vw;
+                    bottom:-20px;
+                    background:${colors[i % colors.length]};
+                    animation-delay:${Math.random()*6}s;
+                    animation-duration:${4 + Math.random()*5}s;
+                `;
+                container.appendChild(p);
+            }
+        }
+
+        // ─── Weather Code Helpers ────────────────────────
+        const rainyOrBadCodes = new Set([
+            51,53,55,56,57,61,63,65,66,67,
+            71,73,75,77,80,81,82,85,86,95,96,99,
+        ]);
+
+        function weatherCodeToLabel(code, lang) {
+            return (weatherLabels[lang] || weatherLabels.en)[code] || (lang === 'bn' ? 'অজানা' : 'Unknown');
+        }
+
+        function weatherCodeToIcon(code) {
+            if ([0,1].includes(code))  return '☀️';
+            if ([2,3].includes(code))  return '⛅';
+            if ([45,48].includes(code)) return '🌫️';
+            if ([51,53,55,56,57].includes(code)) return '🌦️';
+            if ([61,63,65,66,67].includes(code)) return '🌧️';
+            if ([71,73,75,77,85,86].includes(code)) return '🌨️';
+            if ([80,81,82].includes(code)) return '🌧️';
+            if ([95,96,99].includes(code)) return '⛈️';
+            return '🌡️';
+        }
+
+        // ─── Language Switching ──────────────────────────
+        function setLang(lang) {
+            currentLang = lang;
+            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+            document.getElementById('btn-bn').classList.toggle('active', lang === 'bn');
+            document.documentElement.lang = lang === 'bn' ? 'bn' : 'en';
+
+            // Update static UI strings
+            const s = ui[lang];
+            document.getElementById('loading-title').textContent     = s.loadingTitle;
+            document.getElementById('loading-subtitle').textContent  = s.loadingSubtitle;
+            document.getElementById('footer-text').textContent       = s.footerText;
+            document.getElementById('retry-btn').textContent         = s.retryBtn;
+            document.getElementById('error-title').textContent       = s.errorTitle;
+            document.getElementById('error-retry-btn').textContent   = s.errorRetryBtn;
+
+            // If we already have weather data, re-render the result
+            if (lastWeatherData) {
+                renderResult(lastWeatherData);
+            }
+        }
+
+        // ─── Main Logic ─────────────────────────────────
+        async function init() {
+            try {
+                const pos = await getLocation();
+                const { latitude, longitude } = pos.coords;
+                const weather = await fetchWeather(latitude, longitude);
+                lastWeatherData = weather;
+                renderResult(weather);
+            } catch (err) {
+                showError(err);
+            }
+        }
+
+        function getLocation() {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject({ code: 'noGeo' });
+                    return;
+                }
+                navigator.geolocation.getCurrentPosition(resolve, (err) => {
+                    reject({ code: err.code });
+                }, { enableHighAccuracy: false, timeout: 12000, maximumAge: 300000 });
+            });
+        }
+
+        async function fetchWeather(lat, lon) {
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&timezone=auto`;
+            const res = await fetch(url);
+            if (!res.ok) throw { code: 'api' };
+            const data = await res.json();
+            return data.current;
+        }
+
+        // ─── Render Result ───────────────────────────────
+        function renderResult(w) {
+            const lang   = currentLang;
+            const s      = ui[lang];
+            const code   = w.weather_code;
+            const temp   = w.temperature_2m;
+            const precip = w.precipitation;
+            const wind   = w.wind_speed_10m;
+            const humidity = w.relative_humidity_2m;
+            const feelsLike = w.apparent_temperature;
+
+            const isBadWeather = rainyOrBadCodes.has(code) || precip > 0.5;
+            const isFreezing   = temp < 5;
+            const isScorching  = temp > 38;
+            const ruined       = isBadWeather || isFreezing;
+
+            // Pick advice
+            const pool = advice[lang];
+            let chosen;
+            if (isBadWeather)      chosen = pick(pool.bad);
+            else if (isFreezing)   chosen = pick(pool.freezing);
+            else if (isScorching)  chosen = pick(pool.hot);
+            else                   chosen = pick(pool.good);
+
+            // Apply verdict
+            const $verdict = document.getElementById('verdict');
+            $verdict.textContent = ruined ? s.verdictYes : s.verdictNo;
+            // Adjust font size for Bengali (longer text)
+            $verdict.classList.toggle('verdict-bn', lang === 'bn');
+
+            // Apply advice
+            document.getElementById('advice-emoji').textContent = chosen.emoji;
+            document.getElementById('advice-text').textContent  = chosen.text;
+
+            // Background
+            $body.classList.remove('bg-loading', 'bg-good', 'bg-bad');
+            $body.classList.add(ruined ? 'bg-bad' : 'bg-good');
+
+            // Weather chips
+            const chipsHtml = `
+                <span class="chip">${weatherCodeToIcon(code)} ${weatherCodeToLabel(code, lang)}</span>
+                <span class="chip">🌡️ ${temp}°C</span>
+                <span class="chip">🤔 ${s.feels} ${feelsLike}°C</span>
+                <span class="chip">💧 ${precip} mm</span>
+                <span class="chip">💨 ${wind} km/h</span>
+                <span class="chip">💦 ${humidity}%</span>
+            `;
+            document.getElementById('weather-chips').innerHTML = chipsHtml;
+
+            // Particles
+            spawnParticles(!ruined);
+
+            // Show
+            showScreen($result);
+        }
+
+        // ─── Error ───────────────────────────────────────
+        function showError(err) {
+            const lang = currentLang;
+            const msgs = errorMessages[lang];
+            const msg  = msgs[err.code] || msgs.unknown || ui[lang].errorDefault;
+            document.getElementById('error-msg').textContent = msg;
+            showScreen($error);
+        }
+
+        // ─── Go ──────────────────────────────────────────
+        init();
+    </script>
+</body>
+</html>
